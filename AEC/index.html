@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="description" content="WebRTC code samples">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+    <meta id="theme-color" name="theme-color" content="#ffffff">
+
+    <base target="_blank">
+
+    <title>gUM audio AEC</title>
+
+</head>
+
+<body>
+
+<div id="container">
+
+    <h1><span>getUserMedia, audio only. AEC constraint</span>
+    </h1>
+    <audio id="gum-local" controls autoplay></audio>
+    <div>
+        <span id="errorMsg"></span>
+    </div>
+
+</div>
+
+<script>    
+'use strict';
+
+// Put variables in global scope to make them available to the browser console.
+const audio = document.querySelector('audio');
+
+const constraints = window.constraints = {
+  audio: { "echoCancellation": true },
+  video: false
+};
+
+function handleSuccess(stream) {
+  const audioTracks = stream.getAudioTracks();
+  console.log('Got stream with constraints:', constraints);
+  console.log('Using audio device: ' + audioTracks[0].label);
+  stream.oninactive = function() {
+    console.log('Stream ended');
+  };
+  window.stream = stream; // make variable available to browser console
+  audio.srcObject = stream;
+}
+
+function handleError(error) {
+  const errorMessage = 'navigator.MediaDevices.getUserMedia error: ' + error.message + ' ' + error.name;
+  document.getElementById('errorMsg').innerText = errorMessage;
+  console.log(errorMessage);
+}
+
+navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+</script>
+
+</body>
+</html>
